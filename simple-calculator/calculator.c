@@ -1,5 +1,19 @@
 #include <stdio.h>
 
+int read_int(int *value)
+{
+	int result = scanf("%d", value);
+	int c;
+
+	if (result != 1)
+	{
+		while ((c = getchar()) != '\n' && c != EOF)
+			;
+		return (0);
+	}
+	return (1);
+}
+
 int main(void)
 {
 	int choice, a, b;
@@ -9,8 +23,11 @@ int main(void)
 	{
 		printf("1) Add\n2) Subtract\n3) Multiply\n4) Divide\n0) Quit\n");
 		printf("Choice: ");
-		if (scanf("%d", &choice) != 1)
-			break;
+		if (!read_int(&choice))
+		{
+			printf("Invalid choice\n");
+			continue;
+		}
 		if (choice == 0)
 		{
 			printf("Bye!\n");
@@ -22,9 +39,11 @@ int main(void)
 			continue;
 		}
 		printf("A: ");
-		scanf("%d", &a);
+		while (!read_int(&a))
+			printf("Invalid number\nA: ");
 		printf("B: ");
-		scanf("%d", &b);
+		while (!read_int(&b))
+			printf("Invalid number\nB: ");
 		if (choice == 1)
 			printf("Result: %d\n", a + b);
 		else if (choice == 2)
