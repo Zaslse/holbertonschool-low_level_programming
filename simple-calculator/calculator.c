@@ -1,14 +1,5 @@
 #include <stdio.h>
 
-/**
- * main - Simple calculator
- *
- * Description: Add, Subtract and Multiply use integers.
- * Division is computed with decimals (e.g. 10 / 4 = 2.5).
- * Division by zero prints an error message.
- *
- * Return: Always 0 (Success)
- */
 int main(void)
 {
 	int choice, a, b;
