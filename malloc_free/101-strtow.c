@@ -1,6 +1,12 @@
 #include "main.h"
 #include <stdlib.h>
 
+/**
+ * count_words - counts the number of words in a string
+ * @s: the string to evaluate
+ *
+ * Return: number of words
+ */
 int count_words(char *s)
 {
 	int flag = 0, c = 0, w = 0;
@@ -18,6 +24,12 @@ int count_words(char *s)
 	return (w);
 }
 
+/**
+ * strtow - splits a string into words
+ * @str: the string to split
+ *
+ * Return: pointer to an array of strings, or NULL on failure
+ */
 char **strtow(char *str)
 {
 	char **matrix, *tmp;
@@ -28,9 +40,11 @@ char **strtow(char *str)
 	words = count_words(str);
 	if (words == 0)
 		return (NULL);
+
 	matrix = malloc((words + 1) * sizeof(char *));
 	if (matrix == NULL)
 		return (NULL);
+
 	for (i = 0; i <= len; i++)
 	{
 		if (str[i] == ' ' || str[i] == '\0')
