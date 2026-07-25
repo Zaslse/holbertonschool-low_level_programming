@@ -1,5 +1,6 @@
 #include "main.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 /**
  * _isdigit - checks if a string contains a non-digit char
@@ -11,6 +12,8 @@ int _isdigit(char *s)
 {
 	int i = 0;
 
+	if (!*s)
+		return (0);
 	while (s[i])
 	{
 		if (s[i] < '0' || s[i] > '9')
@@ -40,14 +43,7 @@ int _strlen(char *s)
  */
 void errors(void)
 {
-	char *err = "Error\n";
-	int i = 0;
-
-	while (err[i])
-	{
-		_putchar(err[i]);
-		i++;
-	}
+	printf("Error\n");
 	exit(98);
 }
 
@@ -60,41 +56,39 @@ void errors(void)
  */
 int main(int argc, char *argv[])
 {
-	char *s1, *s2;
-	int len1, len2, i, j, carry, *res, a = 0;
+	char *s1, *s2, *res;
+	int l1, l2, len, i, j, carry, d1, d2;
 
-	s1 = argv[1], s2 = argv[2];
-	if (argc != 3 || !_isdigit(s1) || !_isdigit(s2))
+	if (argc != 3 || !_isdigit(argv[1]) || !_isdigit(argv[2]))
 		errors();
-	len1 = _strlen(s1);
-	len2 = _strlen(s2);
-	res = malloc(sizeof(int) * (len1 + len2 + 1));
+	s1 = argv[1];
+	s2 = argv[2];
+	l1 = _strlen(s1);
+	l2 = _strlen(s2);
+	len = l1 + l2;
+	res = malloc(len + 1);
 	if (!res)
 		return (1);
-	for (i = 0; i <= len1 + len2; i++)
-		res[i] = 0;
-	for (i = len1 - 1; i >= 0; i--)
+	for (i = 0; i < len; i++)
+		res[i] = '0';
+	res[len] = '\0';
+	for (i = l1 - 1; i >= 0; i--)
 	{
+		d1 = s1[i] - '0';
 		carry = 0;
-		for (j = len2 - 1; j >= 0; j--)
+		for (j = l2 - 1; j >= 0; j--)
 		{
-			carry += res[i + j + 1] + ((s1[i] - '0') * (s2[j] - '0'));
-			res[i + j + 1] = carry % 10;
+			d2 = s2[j] - '0';
+			carry += (res[i + j + 1] - '0') + (d1 * d2);
+			res[i + j + 1] = (carry % 10) + '0';
 			carry /= 10;
 		}
 		if (carry > 0)
 			res[i] += carry;
 	}
-	for (i = 0; i < len1 + len2; i++)
-	{
-		if (res[i])
-			a = 1;
-		if (a)
-			_putchar(res[i] + '0');
-	}
-	if (!a)
-		_putchar('0');
-	_putchar('\n');
+	for (i = 0; i < len - 1 && res[i] == '0'; i++)
+		;
+	printf("%s\n", res + i);
 	free(res);
 	return (0);
 }
