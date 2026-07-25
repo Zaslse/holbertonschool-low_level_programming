@@ -36,7 +36,7 @@ int _strlen(char *s)
 }
 
 /**
- * errors - handles errors for main avoiding printf memory leaks
+ * errors - handles errors for main
  */
 void errors(void)
 {
@@ -60,42 +60,41 @@ void errors(void)
  */
 int main(int argc, char *argv[])
 {
-	int len1, len2, len, i, carry, digit1, digit2, *result, a = 0;
+	char *s1, *s2;
+	int len1, len2, i, j, carry, *res, a = 0;
 
-	if (argc != 3 || !_isdigit(argv[1]) || !_isdigit(argv[2]))
+	s1 = argv[1], s2 = argv[2];
+	if (argc != 3 || !_isdigit(s1) || !_isdigit(s2))
 		errors();
-	len1 = _strlen(argv[1]);
-	len2 = _strlen(argv[2]);
-	len = len1 + len2 + 1;
-	result = malloc(sizeof(int) * len);
-	if (!result)
+	len1 = _strlen(s1);
+	len2 = _strlen(s2);
+	res = malloc(sizeof(int) * (len1 + len2 + 1));
+	if (!res)
 		return (1);
-	for (i = 0; i < len; i++)
-		result[i] = 0;
-	for (len1 = len1 - 1; len1 >= 0; len1--)
+	for (i = 0; i <= len1 + len2; i++)
+		res[i] = 0;
+	for (i = len1 - 1; i >= 0; i--)
 	{
-		digit1 = argv[1][len1] - '0';
 		carry = 0;
-		for (len2 = _strlen(argv[2]) - 1; len2 >= 0; len2--)
+		for (j = len2 - 1; j >= 0; j--)
 		{
-			digit2 = argv[2][len2] - '0';
-			carry += result[len1 + len2 + 1] + (digit1 * digit2);
-			result[len1 + len2 + 1] = carry % 10;
+			carry += res[i + j + 1] + ((s1[i] - '0') * (s2[j] - '0'));
+			res[i + j + 1] = carry % 10;
 			carry /= 10;
 		}
 		if (carry > 0)
-			result[len1 + len2 + 1] += carry;
+			res[i] += carry;
 	}
-	for (i = 0; i < len - 1; i++)
+	for (i = 0; i < len1 + len2; i++)
 	{
-		if (result[i])
+		if (res[i])
 			a = 1;
 		if (a)
-			_putchar(result[i] + '0');
+			_putchar(res[i] + '0');
 	}
 	if (!a)
 		_putchar('0');
 	_putchar('\n');
-	free(result);
+	free(res);
 	return (0);
 }
