@@ -1,6 +1,5 @@
 #include "main.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 /**
  * _isdigit - checks if a string contains a non-digit char
@@ -37,11 +36,18 @@ int _strlen(char *s)
 }
 
 /**
- * errors - handles errors for main
+ * errors - handles errors for main avoiding printf memory leaks
  */
 void errors(void)
 {
-	printf("Error\n");
+	char *err = "Error\n";
+	int i = 0;
+
+	while (err[i])
+	{
+		_putchar(err[i]);
+		i++;
+	}
 	exit(98);
 }
 
@@ -54,16 +60,17 @@ void errors(void)
  */
 int main(int argc, char *argv[])
 {
-	int len1, len2, i, carry, digit1, digit2, *result, a = 0;
+	int len1, len2, len, i, carry, digit1, digit2, *result, a = 0;
 
 	if (argc != 3 || !_isdigit(argv[1]) || !_isdigit(argv[2]))
 		errors();
 	len1 = _strlen(argv[1]);
 	len2 = _strlen(argv[2]);
-	result = malloc(sizeof(int) * (len1 + len2 + 1));
+	len = len1 + len2 + 1;
+	result = malloc(sizeof(int) * len);
 	if (!result)
 		return (1);
-	for (i = 0; i <= len1 + len2; i++)
+	for (i = 0; i < len; i++)
 		result[i] = 0;
 	for (len1 = len1 - 1; len1 >= 0; len1--)
 	{
@@ -79,7 +86,7 @@ int main(int argc, char *argv[])
 		if (carry > 0)
 			result[len1 + len2 + 1] += carry;
 	}
-	for (i = 0; i < _strlen(argv[1]) + _strlen(argv[2]); i++)
+	for (i = 0; i < len - 1; i++)
 	{
 		if (result[i])
 			a = 1;
