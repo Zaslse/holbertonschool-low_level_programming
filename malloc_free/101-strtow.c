@@ -2,6 +2,18 @@
 #include <stdlib.h>
 
 /**
+ * util_free - frees a matrix if malloc fails
+ * @matrix: array of strings
+ * @k: current index
+ */
+void util_free(char **matrix, int k)
+{
+	while (k >= 0)
+		free(matrix[k--]);
+	free(matrix);
+}
+
+/**
  * count_words - counts the number of words in a string
  * @s: the string to evaluate
  *
@@ -33,7 +45,7 @@ int count_words(char *s)
 char **strtow(char *str)
 {
 	char **matrix, *tmp;
-	int i, k = 0, len = 0, words, c = 0, start, end;
+	int i, k = 0, len = 0, words, c = 0, start;
 
 	while (*(str + len))
 		len++;
@@ -51,20 +63,16 @@ char **strtow(char *str)
 		{
 			if (c)
 			{
-				end = i;
 				tmp = malloc((c + 1) * sizeof(char));
 				if (tmp == NULL)
 				{
-					while (k >= 0)
-						free(matrix[k--]);
-					free(matrix);
+					util_free(matrix, k);
 					return (NULL);
 				}
-				while (start < end)
+				while (start < i)
 					*tmp++ = str[start++];
 				*tmp = '\0';
-				matrix[k] = tmp - c;
-				k++;
+				matrix[k++] = tmp - c;
 				c = 0;
 			}
 		}
