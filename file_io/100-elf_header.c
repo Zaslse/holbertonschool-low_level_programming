@@ -121,8 +121,7 @@ void print_osabi_more(unsigned char *buf)
 	else
 		printf("<unknown: %x>\n", buf[EI_OSABI]);
 
-	printf("  ABI Version:                       %d\n",
-   		buf[EI_ABIVERSION]);
+	printf("  ABI Version:                       %d\n", buf[EI_ABIVERSION]);
 }
 
 /**
@@ -170,8 +169,7 @@ void print_entry(unsigned char *buf)
 			e = buf[24] | ((uint32_t)buf[25] << 8) |
 				((uint32_t)buf[26] << 16) |
 				((uint32_t)buf[27] << 24);
-		printf("  Entry point address:               0x%x\n",
-   			(unsigned int)e);
+		printf("  Entry point address:               0x%x\n", (unsigned int)e);
 	}
 	else
 	{
@@ -191,7 +189,6 @@ void print_entry(unsigned char *buf)
 				((uint64_t)buf[29] << 40) |
 				((uint64_t)buf[30] << 48) |
 				((uint64_t)buf[31] << 56);
-		printf("  Entry point address:               0x%lx\n",
-   			(unsigned long)e);
+		printf("  Entry point address:               0x%lx\n", (unsigned long)e);
 	}
 }
