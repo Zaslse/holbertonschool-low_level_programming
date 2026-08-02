@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 void print_mcdv(unsigned char *buf);
 void print_osabi_more(unsigned char *buf);
@@ -35,7 +36,8 @@ int main(int argc, char *argv[])
 		exit(98);
 	}
 	r = read(fd, buf, 64);
-	if (r < 16 || buf[0] != 0x7f || buf[1] != 'E' || buf[2] != 'L' || buf[3] != 'F')
+	if (r < 16 || buf[0] != 0x7f || buf[1] != 'E' ||
+		buf[2] != 'L' || buf[3] != 'F')
 	{
 		dprintf(STDERR_FILENO, "Error: Not an ELF file\n");
 		close(fd);
@@ -119,7 +121,8 @@ void print_osabi_more(unsigned char *buf)
 	else
 		printf("<unknown: %x>\n", buf[EI_OSABI]);
 
-	printf("  ABI Version:					   %d\n", buf[EI_ABIVERSION]);
+	printf("  ABI Version:					   %d\n",
+		   buf[EI_ABIVERSION]);
 }
 
 /**
@@ -129,11 +132,9 @@ void print_osabi_more(unsigned char *buf)
 void print_type(unsigned char *buf)
 {
 	uint16_t type;
+	int msb = (buf[EI_DATA] == ELFDATA2MSB);
 
-	if (buf[EI_DATA] == ELFDATA2MSB)
-		type = (buf[16] << 8) | buf[17];
-	else
-		type = buf[16] | (buf[17] << 8);
+	type = msb ? (buf[16] << 8) | buf[17] : buf[16] | (buf[17] << 8);
 
 	printf("  Type:							  ");
 	if (type == ET_NONE)
@@ -151,29 +152,46 @@ void print_type(unsigned char *buf)
 }
 
 /**
- * print_entry - prints entry point address
+ * print_entry - prints entry point
  * @buf: buffer containing the ELF header
  */
 void print_entry(unsigned char *buf)
 {
 	uint64_t e = 0;
+	int msb = (buf[EI_DATA] == ELFDATA2MSB);
 
 	if (buf[EI_CLASS] == ELFCLASS32)
-		e = (buf[EI_DATA] == ELFDATA2MSB) ?
-			((uint32_t)buf[24] << 24) | ((uint32_t)buf[25] << 16) |
-			((uint32_t)buf[26] << 8) | buf[27] :
-			buf[24] | ((uint32_t)buf[25] << 8) |
-			((uint32_t)buf[26] << 16) | ((uint32_t)buf[27] << 24);
+	{
+		if (msb)
+			e = ((uint32_t)buf[24] << 24) |
+				((uint32_t)buf[25] << 16) |
+				((uint32_t)buf[26] << 8) | buf[27];
+		else
+			e = buf[24] | ((uint32_t)buf[25] << 8) |
+				((uint32_t)buf[26] << 16) |
+				((uint32_t)buf[27] << 24);
+		printf("  Entry point address:			   0x%x\n",
+			   (unsigned int)e);
+	}
 	else
-		e = (buf[EI_DATA] == ELFDATA2MSB) ?
-			((uint64_t)buf[24] << 56) | ((uint64_t)buf[25] << 48) |
-			((uint64_t)buf[26] << 40) | ((uint64_t)buf[27] << 32) |
-			((uint64_t)buf[28] << 24) | ((uint64_t)buf[29] << 16) |
-			((uint64_t)buf[30] << 8) | buf[31] :
-			buf[24] | ((uint64_t)buf[25] << 8) |
-			((uint64_t)buf[26] << 16) | ((uint64_t)buf[27] << 24) |
-			((uint64_t)buf[28] << 32) | ((uint64_t)buf[29] << 40) |
-			((uint64_t)buf[30] << 48) | ((uint64_t)buf[31] << 56);
-
-	printf("  Entry point address:			   0x%lx\n", (unsigned long)e);
+	{
+		if (msb)
+			e = ((uint64_t)buf[24] << 56) |
+				((uint64_t)buf[25] << 48) |
+				((uint64_t)buf[26] << 40) |
+				((uint64_t)buf[27] << 32) |
+				((uint64_t)buf[28] << 24) |
+				((uint64_t)buf[29] << 16) |
+				((uint64_t)buf[30] << 8) | buf[31];
+		else
+			e = buf[24] | ((uint64_t)buf[25] << 8) |
+				((uint64_t)buf[26] << 16) |
+				((uint64_t)buf[27] << 24) |
+				((uint64_t)buf[28] << 32) |
+				((uint64_t)buf[29] << 40) |
+				((uint64_t)buf[30] << 48) |
+				((uint64_t)buf[31] << 56);
+		printf("  Entry point address:			   0x%lx\n",
+			   (unsigned long)e);
+	}
 }
